@@ -101,8 +101,8 @@ class StorageService {
           status: 'published', // 'published', 'draft', 'scheduled'
           coverImage: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80',
           coverAlt: 'Esquema y paisaje del ciclo hidrológico en la naturaleza',
-          author: 'Lic. Ramona Almonte',
-          role: 'Especialista en Didáctica',
+          author: 'Lic. Raysa Tejeda',
+          role: 'Docente',
           views: 2450,
           createdAt: new Date('2025-03-14T08:30:00Z').getTime(),
           content: `
@@ -278,8 +278,8 @@ class StorageService {
           status: 'draft',
           coverImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
           coverAlt: 'Paisaje de manglar rojo costero',
-          author: 'Lic. Ramona Almonte',
-          role: 'Especialista en Didáctica',
+          author: 'Lic. Raysa Tejeda',
+          role: 'Docente',
           views: 0,
           createdAt: new Date('2025-03-15T09:00:00Z').getTime(),
           content: `
@@ -302,7 +302,7 @@ class StorageService {
           authorName: 'Prof. Manuel Grullón',
           authorType: 'teacher', // teacher, family, student, guest
           authorBadge: 'Docente Verificado',
-          schoolInfo: 'Escuela Rep. de Chile • Distrito 10-01',
+          schoolInfo: 'Escuela Rep. de Chile • República Dominicana',
           content: 'Excelente desglose. Realizamos hoy mismo el experimento de la bolsa con mis 28 alumnos de 5to grado y la emoción fue fantástica. ¿Tiene recomendaciones para adaptarlo con menos luz solar?',
           status: 'pending', // pending, approved, rejected, spam
           createdAt: new Date(Date.now() - 45 * 60 * 1000).getTime(),
@@ -385,12 +385,12 @@ class StorageService {
       if (settingsCount === 0) {
         await this._putRaw('settings', {
           key: 'teacherProfile',
-          name: 'Lic. Ramona Almonte',
+          name: 'Raysa Tejeda',
           title: 'Lic.',
-          role: 'Especialista en Didáctica',
-          specialty: 'Educación Primaria • Mención Ciencias',
-          school: 'Distrito Educativo 10-01',
-          yearsExperience: 14,
+          role: 'Docente',
+          specialty: 'Educación',
+          school: 'República Dominicana',
+          yearsExperience: 0,
           bio: 'Educar con ternura y firmeza es encender una antorcha que nunca dejará de alumbrar el porvenir de nuestra patria.',
           photoUrl: '',
           updatedAt: Date.now()
@@ -573,7 +573,12 @@ class StorageService {
 
   // ── Perfil Docente ──
   async getTeacherProfile() {
-    const profile = await this.get('settings', 'teacherProfile');
+    let profile = await this.get('settings', 'teacherProfile');
+    // Migración: reemplaza el perfil de ejemplo anterior por el de Raysa Tejeda
+    if (profile && /Ramona\s+Almonte/.test(profile.name || '')) {
+      Object.assign(profile, { name: 'Raysa Tejeda', title: 'Lic.', role: 'Docente', specialty: 'Educación', school: 'República Dominicana', yearsExperience: 0, updatedAt: Date.now() });
+      await this.put('settings', profile);
+    }
     // Retornar defaults si no existe
     return profile || {
       key: 'teacherProfile',
